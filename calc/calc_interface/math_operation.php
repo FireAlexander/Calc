@@ -1,5 +1,4 @@
 <?php
-namespace calc_interface;
 
 interface math_operation
 {
