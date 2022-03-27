@@ -17,7 +17,8 @@
             echo '<select class="operations" name="operation">';
             $i = 1;
             foreach ($_GET as $index => $value) {
-                if ($i % 2 == 1) {
+                if ($index == "Result") {}
+                else if ($i % 2 == 1) {
                     echo "<option value='" . $value . "'>";
                 } else {
                     echo $value . "</option>";

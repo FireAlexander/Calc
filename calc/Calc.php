@@ -14,7 +14,6 @@ include_once ('./lib/send_post.php');
 
 class Calc
 {
-   public array $array_operations = [];
 
     public function __construct(float $operand1, float $operand2, \calc_interface\math_operation $operation)
     {
@@ -25,14 +24,14 @@ class Calc
 
     // Get Class name from "operaions" directory.
     public static function get_operations () {
-                $array_operations = [];
+
+        $array_operations = [];
         $dirs = new RecursiveIteratorIterator(new RecursiveDirectoryIterator('./operations'));
         foreach ($dirs as $name => $file) {
             $ext = $file->getExtension();
             if (in_array($ext, ['php']) && !is_dir($file))
-               // $array_operatons[] = '\\operations\\' . pathinfo($name)['filename']; // add namespace to the classname
                 $array_operations[] = pathinfo($name)['filename'];
-        }
+                    }
         return $array_operations;
     }
 
@@ -90,8 +89,16 @@ if(isset($_POST['submit'])) {
         $urlArray = parse_url($_SERVER['HTTP_REFERER']);
         $newUrl = $urlArray['scheme'].'://'.$urlArray['host'].$urlArray['path'];
         echo $newUrl;
-        echo 'Location: ' . $newUrl . '&Result=' . $obj->result();
-        //header("Location: " . $_SERVER['HTTP_REFERER'] . "&Result=" . $obj->result() ); // Возвращаеся на станицу калькулятора и возвращаем результат
+        $array_operations = Calc::get_operations();
+        $str_param = ""; // initialization
+        foreach ($array_operations as $index => $classname) {
+            $classname = "\operations\\" . $classname;
+            $str_param .= "name" . $index . "=" . $classname::Name . "&operator" . $index . "=" . urlencode($classname::Operator) ;
+            if (!($index == count($array_operations)-1)) // don't add "&" if last element in massive
+                $str_param .= "&";
+        }
+        //echo 'Location: ' . $newUrl . "?" .  $str_param . '&Result=' . $obj->result();
+        header("Location: " . $newUrl . "?" .  $str_param . '&Result=' . $obj->result() ); // Возвращаеся на станицу калькулятора и возвращаем результат
         exit;
     }
 
@@ -109,9 +116,7 @@ if (isset($_GET['loadoperator'])) {
         $str_param .= "name" . $index . "=" . $classname::Name . "&operator" . $index . "=" . urlencode($classname::Operator) ;
         if (!($index == count($array_operations)-1)) // don't add "&" if last element in massive
             $str_param .= "&";
-
     }
-
     header("Location: /index2.php?" .$str_param);
 
 }
