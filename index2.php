@@ -10,9 +10,9 @@
     <!-- field for first number --!>
     <input type="text" name="First_number" class="numbers" placeholder="First number">
         <?php
-        if(!isset($_GET['name0'])) {
+        if(!isset($_GET['name0'])) { // At the first opening go to Calc.php for operations
             header("Location: calc/Calc.php?loadoperator=1" );
-        } else {
+        } else { // else show all operations
             // list of operations
             echo '<select class="operations" name="operation">';
             $i = 1;
@@ -34,7 +34,7 @@
 <!-- calculate --!>
     <input class="submit_form" type="submit" name="submit" value="Get answer">
     </form>
-    <?php
+    <?php // if get the result - show it
     if (isset($_GET['Result'])) {
         Echo "Result: " . $_GET['Result'];
         }

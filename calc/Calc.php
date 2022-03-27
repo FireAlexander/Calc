@@ -9,17 +9,15 @@ function myAutoload($classname) {
 //register Loader
 spl_autoload_register('myAutoload');
 
-include_once ('./lib/send_post.php');
 
-
+// main class
 class Calc
 {
-
     public function __construct(float $operand1, float $operand2, \calc_interface\math_operation $operation)
     {
-        $this->operand1 = $operand1;
-        $this->operand2 = $operand2;
-        $this->operation = $operation;
+        $this->operand1 = $operand1; //operand1 - left operand in calculator
+        $this->operand2 = $operand2; //operand2 - right operand in calculator
+        $this->operation = $operation;  //operation - type of math operation in calculator
     }
 
     // Get Class name from "operaions" directory.
@@ -41,36 +39,14 @@ class Calc
     }
 
 }
-
-/*$obj = new Calc();
-$array_operations = $obj->get_operations();
-echo $array_operations[0] . $array_operations[1];
-
-foreach($array_operations as $classname) {
-    $classname = "\operations\\" . $classname;
-    $obj = new $classname();
-    echo $obj->getName();
-    echo $obj->operation(1,5);
-}
-*/
-
-/*$array_operations = Calc::get_operations(); // list of operation from file name in "directory operations"
-
-//initialize all operations class for loader
-foreach ($array_operations as $index => $classname) {
-    $classname = "\operations\\" . $classname;
-    $obj = new $classname();
-   } */
-
-
+// if received a post request
 if(isset($_POST['submit'])) {
     //filing value
-    $number1 = $_POST['First_number'];
-    $number2 = $_POST['Second_number'];
-    $operation = $_POST['operation'];
+    $number1 = $_POST['First_number'];  //left operand in calculator
+    $number2 = $_POST['Second_number']; //right operand in calculator
+    $operation = $_POST['operation']; //type of math operation in calculator
 
     //Are fields filed?
-        //Are fields filed?
     if(empty($operation) || (empty($number1) && $number1 != '0') || (empty($number2) && $number2 != '0')) {
         $error_message = 'One or more fields are not filed';
     }
@@ -80,15 +56,16 @@ if(isset($_POST['submit'])) {
             $error_message = 'One or more operands are not number';
         }
     }
+    //
     if(isset($error_message)) {
         echo $error_message;
-    } else{
+    } else{ //If the checks passed
         //Create object Calc
-        $classname = "\operations\\" .$operation;
-        $obj = new Calc($number1, $number2, new $classname() );
-        $urlArray = parse_url($_SERVER['HTTP_REFERER']);
-        $newUrl = $urlArray['scheme'].'://'.$urlArray['host'].$urlArray['path'];
-        echo $newUrl;
+        $classname = "\operations\\" .$operation;  // from the class name
+        $obj = new Calc($number1, $number2, new $classname() );  // Create main object
+
+        // Generate Get parameters
+        //in get parameters we pass all operations from "/operations" directory to provide use in the calculator
         $array_operations = Calc::get_operations();
         $str_param = ""; // initialization
         foreach ($array_operations as $index => $classname) {
@@ -97,13 +74,16 @@ if(isset($_POST['submit'])) {
             if (!($index == count($array_operations)-1)) // don't add "&" if last element in massive
                 $str_param .= "&";
         }
-        //echo 'Location: ' . $newUrl . "?" .  $str_param . '&Result=' . $obj->result();
-        header("Location: " . $newUrl . "?" .  $str_param . '&Result=' . $obj->result() ); // Возвращаеся на станицу калькулятора и возвращаем результат
+        // Return to the index2.php with get parameters (with Result)
+        $urlArray = parse_url($_SERVER['HTTP_REFERER']);
+        $newUrl = $urlArray['scheme'].'://'.$urlArray['host'].$urlArray['path'];
+        header("Location: " . $newUrl . "?" .  $str_param . '&Result=' . $obj->result() ); // Возвращаеся на станицу index2.php и возвращаем результат
         exit;
     }
 
 }
 
+// At the first opening return to index2.php all operations supported by the calculator
 if (isset($_GET['loadoperator'])) {
 
     $array_operations = Calc::get_operations(); // list of operation from file name in "directory operations"
@@ -112,11 +92,11 @@ if (isset($_GET['loadoperator'])) {
     //build string with GET parameters
     foreach ($array_operations as $index => $classname) {
         $classname = "\operations\\" . $classname;
-        $obj = new $classname();
+        $obj = new $classname(); // Create all operations objects for loader
         $str_param .= "name" . $index . "=" . $classname::Name . "&operator" . $index . "=" . urlencode($classname::Operator) ;
         if (!($index == count($array_operations)-1)) // don't add "&" if last element in massive
             $str_param .= "&";
     }
-    header("Location: /index2.php?" .$str_param);
+    header("Location: /index2.php?" .$str_param); //return to the index2.php
 
 }
