@@ -9,13 +9,25 @@
     <form action="calc/Calc.php" method="post" class="calculator">
     <!-- field for first number --!>
     <input type="text" name="First_number" class="numbers" placeholder="First number">
-    <select class="operations" name="operation">
-    <!-- list of operations --!>
-        <option value='Addition'>+ </option>
-        <option value='Subtraction'>- </option>
-        <option value='multiply'>* </option>
-        <option value='divide'>/ </option>
-    </select>
+        <?php
+        if(!isset($_GET['name0'])) {
+            header("Location: calc/Calc.php?loadoperator=1" );
+        } else {
+            // list of operations
+            echo '<select class="operations" name="operation">';
+            $i = 1;
+            foreach ($_GET as $index => $value) {
+                if ($i % 2 == 1) {
+                    echo "<option value='" . $value . "'>";
+                } else {
+                    echo $value . "</option>";
+                }
+                $i++;
+            }
+            echo "</select>";
+        }
+        ?>
+
 <!-- field for second number --!>
     <input type="text" name="Second_number" class="numbers" placeholder="Second number">
 <!-- calculate --!>
@@ -24,8 +36,7 @@
     <?php
     if (isset($_GET['Result'])) {
         Echo "Result: " . $_GET['Result'];
-
-    }
+        }
     ?>
 </body>
 </html>
