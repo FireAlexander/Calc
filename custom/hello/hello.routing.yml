@@ -1,0 +1,8 @@
+hello.example:
+  path: '/hello/example'
+  defaults:
+    _title: 'Example'
+    _controller: '\Drupal\hello\Controller\HelloController::build'
+  requirements:
+    _permission: 'access content'
+

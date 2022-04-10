@@ -1,0 +1,34 @@
+version: "3.7"
+
+services:
+  php:
+    image: wodby/drupal:$DRUPAL_TAG
+    environment:
+      PHP_FPM_CLEAR_ENV: "no"
+    volumes:
+    - codebase:/var/www/html
+    - ./calc:/var/www/html/web/calc:cached 
+    - ./index2.php:/var/www/html/web/index2.php:cached
+    - ./custom:/var/www/html/web/modules/custom:cached
+
+
+
+  crond:
+    image: wodby/drupal:$DRUPAL_TAG
+    environment:
+      PHP_FPM_CLEAR_ENV: "no"
+    volumes:
+    - codebase:/var/www/html
+    - ./calc:/var/www/html/web/calc:cached
+    - ./custom:/var/www/html/web/modules/custom:cached
+
+  nginx:
+    volumes:
+    - codebase:/var/www/html
+    - ./calc:/var/www/html/web/calc:cached
+    - ./index2.php:/var/www/html/web/index2.php:cached
+    - ./custom:/var/www/html/web/modules/custom:cached
+
+
+volumes:
+  codebase:
